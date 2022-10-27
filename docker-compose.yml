@@ -1,0 +1,30 @@
+version: "3.98"
+services:
+  ssi-service-web:
+    build:
+      context: ./
+      dockerfile: ./ssi/Dockerfile
+    ports:
+      - "8080:3000"
+    environment:
+      - JAEGER_HTTP_URL=http://jaeger:14268/api/traces
+    depends_on:
+      - jaeger
+    volumes:
+      - ./config/compose.toml:/app/config/config.toml
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "6831:6831/udp"
+      - "16686:16686"
+      - "14268:14268"
+  dwn-relay-web:
+    build:
+      context: ./
+      dockerfile: ./dwn/Dockerfile
+    ports:
+      - "9000:9000"
+    environment:
+      - API_URL=http://host.docker.internal:8080
+
+
