@@ -35,7 +35,8 @@ jobs:
       run: pip install -r tests/requirements.txt
     
     - name: Run tests
-      run: python tests/0-all-tests.py
+      working-directory: ./tests
+      run: python 0-all-tests.py
 
     - name: Stop Containers
       if: always()
