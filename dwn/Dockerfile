@@ -10,8 +10,12 @@ RUN git clone -b test/dnw-steelthread-test https://github.com/TBD54566975/dwn-re
 
 WORKDIR /dwn/dwn-relay
 
+# We want a fresh run every time so we delete persisted data if it exists
+RUN rm -Rf ./BLOCKSTORE
+
 RUN mkdir -p etc
 RUN cp ./example/config.js etc/
+
 
 # DWN's levelDB has issues running on m1, so we have to install prerequisites and build from source
 RUN apk add --update python3 make g++
