@@ -25,6 +25,6 @@ services:
     ports:
       - "9000:9000"
     environment:
-      - API_URL=http://host.docker.internal:8080
+      - API_URL=http://172.17.0.1:8080
 
 

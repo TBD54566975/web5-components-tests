@@ -15,52 +15,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout SSI-Service Repo
-      uses: actions/checkout@v3
+    - name: checkout repo content
+      uses: actions/checkout@v3 # checkout the repository content to github runner.
+
+    - name: Start Containers
+      run: docker-compose -f "docker-compose.yml" up -d --build
+
+    - name: Install Python
+      uses: actions/setup-python@v4
       with:
-        repository: TBD54566975/ssi-service
-        path: ssi-service
-        
-    - name: Checkout DWN-Relay Repo
-      uses: actions/checkout@v3
-      with:
-        ref: test/dnw-steelthread-test
-        repository: TBD54566975/dwn-relay
-        path: dwn-relay
+        python-version: '3.8'
 
-    # Setup and seed the ssi-service data
-    - name: Start SSI-Service Container
-      run: docker-compose -f "ssi-service/build/docker-compose.yml" up -d --build
-      
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: 1.19.2
-
-    - name: Install Mage
-      working-directory: ./ssi-service
-      run: go install github.com/magefile/mage
-
-    - name: End To End Test And Seed Data
-      working-directory: ./ssi-service
-      run: mage integration steelthread
-      
-    # Setup DWN-Relay and run end to end tests
-    - name: Start DWN-Relay Container
-      run: docker-compose -f "dwn-relay/docker-compose.yml" up -d --build
-
-    - name: Install Packages for Test
-      working-directory: ./dwn-relay
-      run: npm install
+    - name: Install requirements.txt
+      run: pip install -r tests/requirements.txt
     
-    - name: Run DWN-Relay End To End Test
-      working-directory: ./dwn-relay
-      run: node --es-module-specifier-resolution=node src/sanity-checks/protocols-configure-test.js && node --es-module-specifier-resolution=node src/sanity-checks/steelthread-test.js
+    - name: Run tests
+      working-directory: ./tests
+      run: python 0-all-tests.py
 
-    - name: Stop SSI-Service Container
+    - name: Stop Containers
       if: always()
-      run: docker-compose -f "ssi-service/build/docker-compose.yml" down
-      
-    - name: Stop DWN-Relay Container
-      if: always()
-      run: docker-compose -f "dwn-relay/docker-compose.yml" down
+      run: docker-compose -f "docker-compose.yml" down

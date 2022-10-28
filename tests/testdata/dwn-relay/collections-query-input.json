@@ -1,0 +1,23 @@
+{
+    "messages": [
+        {
+            "descriptor": {
+                "target": "did:key:z6MkpGMJMLF3TRaw8gyFJzkMHPSw45SSLyFHv1yS1WZzxdEK",
+                "method": "CollectionsQuery",
+                "dateCreated": 1666973244648,
+                "filter": {
+                    "schema": "https://somehost.com/CredentialManifest"
+                }
+            },
+            "authorization": {
+                "payload": "eyJkZXNjcmlwdG9yQ2lkIjoiYmFmeXJlaWJybTVmazVoYWU2b2N2cTNwNWdhcXFhbmFpdGVvcGR6cnk3YmFlcWVkYmN1cm5nMm12bm0ifQ",
+                "signatures": [
+                    {
+                        "protected": "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa3BHTUpNTEYzVFJhdzhneUZKemtNSFBTdzQ1U1NMeUZIdjF5UzFXWnp4ZEVLI3o2TWtwR01KTUxGM1RSYXc4Z3lGSnprTUhQU3c0NVNTTHlGSHYxeVMxV1p6eGRFSyJ9",
+                        "signature": "z8TrghsM6IqVh70DRwVT92XVKkMFnAaHbBdk5i-X6IAgtvRrS4Eas48ggvTgU470_EcN-5RRp1lJl9GKirpLAQ"
+                    }
+                ]
+            }
+        }
+    ]
+}
