@@ -11,7 +11,6 @@ for file in dir_list :
 
 test_files = filter(lambda file: file != '0-all-tests.py', test_files)
 
-
 for ele in sorted(test_files):
     print("\n\nRunning test file: " + ele)
     exec(open(ele).read())

@@ -21,11 +21,6 @@ jobs:
     - name: Start Containers
       run: docker-compose -f "docker-compose.yml" up -d --build
 
-    # - name: setup python
-    #   uses: actions/setup-python@v2
-    #   with:
-    #     python-version: 3.8 #install the python needed
-
     - name: Install Python
       uses: actions/setup-python@v4
       with:
