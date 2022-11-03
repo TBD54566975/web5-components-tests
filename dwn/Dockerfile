@@ -5,8 +5,7 @@ RUN apk update && apk upgrade && \
 
 WORKDIR /dwn
 
-# TODO: Change to main when test/dnw-steelthread-test is merged
-RUN git clone -b test/dnw-steelthread-test https://github.com/TBD54566975/dwn-relay.git
+RUN git clone https://github.com/TBD54566975/dwn-relay.git
 
 WORKDIR /dwn/dwn-relay
 
