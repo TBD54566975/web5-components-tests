@@ -1,30 +1,29 @@
 import json
 import time
-import cbor2
+import dag_cbor
 import base64
-import hashlib
 
 from cid import make_cid
 
-from multihash import multihash
 from nacl.encoding import URLSafeBase64Encoder
+from multiformats import multihash
 from multibase import encode
 
+def b64_url_encode(value: str) -> str:
+    encoded = base64.urlsafe_b64encode(str.encode(value))
+    result = encoded.rstrip(b"=")
+    return result.decode()
 
-def b64_encode(s):
-    return base64.urlsafe_b64encode(s.encode()).decode()
-
-
-def b64decode(s):
-    return base64.urlsafe_b64decode(s).decode()
-
+def b64_url_encode_bytes(value: bytes) -> str:
+    encoded = base64.urlsafe_b64encode(value)
+    result = encoded.rstrip(b"=")
+    return result.decode()
 
 def bytesToString(b):
     return b.decode("utf-8")
 
-
 def stringToBytes(s):
-    return bytes(s, "utf-8")
+    return bytes(s, 'utf-8')
 
 
 def create_collection_query_message(private_key, did_public_key):
@@ -42,50 +41,52 @@ def create_collection_query_message(private_key, did_public_key):
 
     return message
 
-
 def sign_as_authorization(descriptor, private_key, did_public_key):
     descriptor_cid = generate_cid(descriptor)
 
     auth_payload = {"descriptorCid": str(descriptor_cid)}
     auth_payload_str = json.dumps(auth_payload)
-    auth_payload_base64_bytes = stringToBytes(b64_encode(auth_payload_str))
 
-    signature = sign(auth_payload_base64_bytes, private_key, did_public_key)
+    # Remove spaces for perfect matching of auth payload to js
+    auth_payload_str = auth_payload_str.replace(" ", "")
+
+    auth_payload_base64_str = b64_url_encode(auth_payload_str)
+
+    signature = sign(auth_payload_base64_str, private_key, did_public_key)
     return signature
 
-
 def generate_cid(payload):
-    ob_cbor = cbor2.dumps(payload)
-    ob_cbor_hash = hashlib.sha256(ob_cbor).digest()
-    mh = multihash.encode(digest=ob_cbor_hash, code=18)
-
-    cid = make_cid(1, "dag-pb", mh)
+    payload_cbor_encoded = dag_cbor.encode(payload)
+    payload_hash = multihash.digest(payload_cbor_encoded, "sha2-256")
+    cid = make_cid(1, "dag-cbor", payload_hash)
     return bytesToString(cid.encode("base32"))
 
-
-def sign(payload_bytes, private_key, did_public_key):
+def sign(payload_str, private_key, did_public_key):
     protected_header = {
         "alg": "EdDSA",
         "kid": did_public_key + "#" + did_public_key,
     }
 
     protected_header_string = json.dumps(protected_header)
-    protected_header_base64_url_string = b64_encode(protected_header_string)
+    protected_header_base64_url_string = b64_url_encode(protected_header_string)
 
     signing_input_string = (
-        protected_header_base64_url_string + "." + bytesToString(payload_bytes)
+        protected_header_base64_url_string + "." + payload_str
     )
 
     signing_input_bytes = stringToBytes(signing_input_string)
 
     signed_b64 = private_key.sign(signing_input_bytes, encoder=URLSafeBase64Encoder)
 
+    # python leaves == even with url base64 encoders so we remove == here..
+    sig = bytesToString(signed_b64.signature.rstrip(b"="))
+
     return_object = {
-        "payload": bytesToString(payload_bytes),
+        "payload": payload_str,
         "signatures": [
             {
                 "protected": protected_header_base64_url_string,
-                "signature": bytesToString(signed_b64.signature),
+                "signature": sig,
             }
         ],
     }
@@ -94,7 +95,6 @@ def sign(payload_bytes, private_key, did_public_key):
 
 
 def get_did_key_from_bytes(public_key_bytes):
-
     public_bytes_list = list(public_key_bytes)
 
     prefix = [237, 1]
