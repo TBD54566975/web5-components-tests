@@ -47,7 +47,7 @@ assert len(schemaID) == 36
 # Create a credential manifest
 print("\nCreate a credential manifest: ")
 
-with open("./testdata/ssi-service//manifest-input.json", "r") as file:
+with open("./testdata/ssi-service/manifest-input.json", "r") as file:
     jsonData = json.load(file)
 
 jsonString = json.dumps(jsonData)
