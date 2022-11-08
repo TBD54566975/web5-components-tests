@@ -64,7 +64,7 @@ def generate_cid(payload):
 def sign(payload_str, private_key, did_public_key):
     protected_header = {
         "alg": "EdDSA",
-        "kid": did_public_key + "#" + did_public_key,
+        "kid": did_public_key + "#" + did_public_key.replace("did:key:", ""),
     }
 
     protected_header_string = json.dumps(protected_header)
