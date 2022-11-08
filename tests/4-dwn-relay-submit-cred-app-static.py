@@ -17,4 +17,5 @@ resp = requests.post("http://localhost:9000/", json=jsonData)
 print("\n Recieved Response: ")
 print(resp.json())
 
+# TODO: Replace static submit cred app with dynamic to get a valid response
 assert resp.status_code == 200
