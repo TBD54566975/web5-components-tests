@@ -28,6 +28,7 @@ def bytesToString(b):
 def stringToBytes(s):
     return bytes(s, "utf-8")
 
+
 def is_valid_uuid(val):
     try:
         uuid.UUID(str(val))

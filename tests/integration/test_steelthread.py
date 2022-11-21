@@ -98,7 +98,11 @@ class SSIServiceTestCreateCredentialManifest(unittest.TestCase):
         create_cred_manifest_response = resp.json()
 
         self.assertEqual(resp.status_code, 201)
-        self.assertTrue(util.is_valid_uuid(create_cred_manifest_response["credential_manifest"]["id"]))
+        self.assertTrue(
+            util.is_valid_uuid(
+                create_cred_manifest_response["credential_manifest"]["id"]
+            )
+        )
 
 
 class DWNRelayInstallProtocols(unittest.TestCase):
@@ -119,7 +123,6 @@ class DWNRelayInstallProtocols(unittest.TestCase):
         print(resp.json())
 
         self.assertEqual(resp.status_code, 200)
-        # self.assertEqual(resp.json()["replies"][0]["status"]["detail"], "Accepted")
 
 
 class DWNRelayQueryManifestsDynamic(unittest.TestCase):
@@ -140,7 +143,10 @@ class DWNRelayQueryManifestsDynamic(unittest.TestCase):
         print(resp.json())
 
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json()["replies"][0]["entries"][0]["descriptor"]["schema"], "https://identity.foundation/credential-manifest/schemas/credential-manifest")
+        self.assertEqual(
+            resp.json()["replies"][0]["entries"][0]["descriptor"]["schema"],
+            "https://identity.foundation/credential-manifest/schemas/credential-manifest",
+        )
 
 
 class DWNRelaySubmitCredApplicationDynamic(unittest.TestCase):
