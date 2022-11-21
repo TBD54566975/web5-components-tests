@@ -72,7 +72,7 @@ class SSIServiceTestCreateCredentialManifest(unittest.TestCase):
         self.assertIsNotNone(schema_id)
 
         jsonData["issuerDID"] = issuer_did
-        jsonData["outputDescriptors"][0]["id"] = schema_id
+        jsonData["outputDescriptors"][0]["schema"] = schema_id
 
         print("\nPUT request to ssi-service with payload:")
         print(jsonData)
@@ -157,7 +157,7 @@ class DWNRelaySubmitCredApplicationDynamic(unittest.TestCase):
         print(resp.json())
 
         # TODO: Fix the dynamic collections write message to have the correct DAG CID
-        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.status_code, 200)
 
 if __name__ == '__main__':
     unittest.main()
