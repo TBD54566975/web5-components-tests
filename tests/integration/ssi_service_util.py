@@ -3,8 +3,9 @@ import json
 
 endpoint = "http://localhost:8080/v1"
 
+
 def create_did():
-    did_json = {"keyType":"Ed25519"}
+    did_json = {"keyType": "Ed25519"}
     resp = requests.put(endpoint + "/dids/key", data=json.dumps(did_json))
     return resp.json()
 
@@ -15,6 +16,7 @@ def create_schema():
     resp = requests.put(endpoint + "/schemas", data=json.dumps(schema_json))
 
     return resp.json()
+
 
 def create_verifiable_credential():
     did = create_did()

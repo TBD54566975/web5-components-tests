@@ -11,31 +11,37 @@ from multibase import encode
 
 from jose import jwt
 
+
 def b64_url_encode(value: str) -> str:
     encoded = base64.urlsafe_b64encode(str.encode(value))
     result = encoded.rstrip(b"=")
     return result.decode()
+
 
 def b64_url_encode_bytes(value: bytes) -> str:
     encoded = base64.urlsafe_b64encode(value)
     result = encoded.rstrip(b"=")
     return result.decode()
 
+
 def bytesToString(b):
     return b.decode("utf-8")
 
+
 def stringToBytes(s):
-    return bytes(s, 'utf-8')
+    return bytes(s, "utf-8")
+
 
 def create_jwt(json_data, secret):
-    token = jwt.encode(json_data, secret, algorithm='HS256')
+    token = jwt.encode(json_data, secret, algorithm="HS256")
     print(token)
     return token
 
-def create_collection_write_message(private_key, did_public_key, data):    
+
+def create_collection_write_message(private_key, did_public_key, data):
     encoded_data = b64_url_encode(json.dumps(data))
-    
-    encoded_data_bytes = encoded_data.encode('utf-8')
+
+    encoded_data_bytes = encoded_data.encode("utf-8")
 
     descriptor = {
         "target": did_public_key,
@@ -46,13 +52,18 @@ def create_collection_write_message(private_key, did_public_key, data):
         "recordId": "0474fd67-2d7e-4657-9844-3dcb8b9c54f3",
         "dataCid": generate_cid(data),
         "dateCreated": round(time.time() * 1000),
-        "dataFormat": "application/json"
+        "dataFormat": "application/json",
     }
 
-    authorization = sign_as_authorization(descriptor, private_key, did_public_key)    
-    message = {"descriptor": descriptor, "authorization": authorization, "encodedData" : encoded_data}
+    authorization = sign_as_authorization(descriptor, private_key, did_public_key)
+    message = {
+        "descriptor": descriptor,
+        "authorization": authorization,
+        "encodedData": encoded_data,
+    }
 
     return message
+
 
 def create_collection_query_message(private_key, did_public_key):
     descriptor = {
@@ -69,6 +80,7 @@ def create_collection_query_message(private_key, did_public_key):
 
     return message
 
+
 def sign_as_authorization(descriptor, private_key, did_public_key):
     descriptor_cid = generate_cid(descriptor)
 
@@ -83,11 +95,13 @@ def sign_as_authorization(descriptor, private_key, did_public_key):
     signature = sign(auth_payload_base64_str, private_key, did_public_key)
     return signature
 
+
 def generate_cid(payload):
     payload_cbor_encoded = dag_cbor.encode(payload)
     payload_hash = multihash.digest(payload_cbor_encoded, "sha2-256")
     cid = make_cid(1, "dag-cbor", payload_hash)
     return bytesToString(cid.encode("base32"))
+
 
 # TODO: Implement this for generating a collectionsWrite dag-cbor message
 # /**
@@ -115,9 +129,7 @@ def sign(payload_str, private_key, did_public_key):
     protected_header_string = json.dumps(protected_header)
     protected_header_base64_url_string = b64_url_encode(protected_header_string)
 
-    signing_input_string = (
-        protected_header_base64_url_string + "." + payload_str
-    )
+    signing_input_string = protected_header_base64_url_string + "." + payload_str
 
     signing_input_bytes = stringToBytes(signing_input_string)
 
