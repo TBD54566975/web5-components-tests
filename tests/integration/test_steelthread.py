@@ -1,4 +1,4 @@
-import unittest
+import os
 import json
 import requests
 import pytest
@@ -9,6 +9,7 @@ import ssi_service_util
 import util
 
 # globals
+dirname = os.path.dirname(__file__)
 dwn_private_key = SigningKey.generate()
 dwn_did_public_key = dwn_util.get_did_key_from_bytes(
     dwn_private_key.verify_key.encode()
@@ -18,27 +19,39 @@ create_schema_response = None
 create_cred_manifest_response = None
 
 
-class SSIServiceTestCreateCredentialManifest(unittest.TestCase):
+def http_request(method, url, jsonData):
+    print(f"\n {method} request to url: {url} with payload:\n {jsonData}")
+
+    if method == "PUT":
+        resp = requests.put(url, json=jsonData)
+    if method == "POST":
+        resp = requests.post(url, json=jsonData)
+    if method == "GET":
+        resp = requests.get(url, json=jsonData)
+
+    print(f"\n Recieved Response:\n {resp.json()}")
+
+    return resp
+
+
+class TestSSIServiceTestCreateCredentialManifest:
     @pytest.mark.run(order=1)
     def test_create_did(self):
         # Create a did for the issuer
         print("\nCreate a did for the issuer: ")
 
-        with open("./fixtures/ssi-service/did-input.json", "r") as file:
+        with open(
+            os.path.join(dirname, "fixtures/ssi-service/did-input.json"), "r"
+        ) as file:
             jsonData = json.load(file)
 
-        resp = requests.put(
-            "http://localhost:8080/v1/dids/key", data=json.dumps(jsonData)
-        )
-
-        print("\n Recieved Response: ")
-        print(resp.json())
+        resp = http_request("PUT", "http://localhost:8080/v1/dids/key", jsonData)
 
         global create_did_response
         create_did_response = resp.json()
 
-        self.assertEqual(resp.status_code, 201)
-        self.assertIn("did:", create_did_response["did"]["id"])
+        assert resp.status_code == 201
+        assert "did:" in create_did_response["did"]["id"]
 
     @pytest.mark.run(order=2)
     def test_create_schema(self):
@@ -46,86 +59,71 @@ class SSIServiceTestCreateCredentialManifest(unittest.TestCase):
         print("\nCreate a kyc schema for the manifest: ")
 
         issuer_did = create_did_response["did"]["id"]
-        self.assertIn("did:", issuer_did)
+        assert "did:" in issuer_did
 
-        with open("./fixtures/ssi-service/kyc-schema-input.json", "r") as file:
+        with open(
+            os.path.join(dirname, "fixtures/ssi-service/kyc-schema-input.json"), "r"
+        ) as file:
             jsonData = json.load(file)
 
-        print("\nPUT request to ssi-service with payload:")
-        print(jsonData)
-
-        resp = requests.put(
-            "http://localhost:8080/v1/schemas", data=json.dumps(jsonData)
-        )
-
-        print("\n Recieved Response: ")
-        print(resp.json())
+        resp = http_request("PUT", "http://localhost:8080/v1/schemas", jsonData)
 
         global create_schema_response
         create_schema_response = resp.json()
 
-        self.assertEqual(resp.status_code, 201)
-        self.assertTrue(util.is_valid_uuid(create_schema_response["id"]))
+        assert resp.status_code == 201
+        assert util.is_valid_uuid(create_schema_response["id"]) == True
 
     @pytest.mark.run(order=3)
     def test_create_credential_manifest(self):
         # Create a credential manifest
         print("\nCreate a credential manifest: ")
 
-        with open("./fixtures/ssi-service/manifest-input.json", "r") as file:
+        with open(
+            os.path.join(dirname, "fixtures/ssi-service/manifest-input.json"), "r"
+        ) as file:
             jsonData = json.load(file)
 
         issuer_did = create_did_response["did"]["id"]
-        self.assertIn("did:", issuer_did)
+        assert "did:" in issuer_did
 
         schema_id = create_schema_response["id"]
-        self.assertIsNotNone(schema_id)
+        assert schema_id is not None
 
         jsonData["issuerDID"] = issuer_did
         jsonData["outputDescriptors"][0]["schema"] = schema_id
 
-        print("\nPUT request to ssi-service with payload:")
-        print(jsonData)
-
-        resp = requests.put(
-            "http://localhost:8080/v1/manifests", data=json.dumps(jsonData)
-        )
-
-        print("\n Recieved Response: ")
-        print(resp.json())
+        resp = http_request("PUT", "http://localhost:8080/v1/manifests", jsonData)
 
         global create_cred_manifest_response
         create_cred_manifest_response = resp.json()
 
-        self.assertEqual(resp.status_code, 201)
-        self.assertTrue(
+        assert resp.status_code == 201
+        assert (
             util.is_valid_uuid(
                 create_cred_manifest_response["credential_manifest"]["id"]
             )
+            == True
         )
 
 
-class DWNRelayInstallProtocols(unittest.TestCase):
+class TestDWNRelayInstallProtocols:
     @pytest.mark.run(order=4)
     def test_install_protocols(self):
         # Configure Protocols for DWN-Relay
         print("\nConfigure Protocols for DWN-Relay: ")
 
-        with open("./fixtures/dwn-relay/protocols-configure.json", "r") as file:
+        with open(
+            os.path.join(dirname, "fixtures/dwn-relay/protocols-configure.json"), "r"
+        ) as file:
             jsonData = json.load(file)
 
-        print("\nPosting to dwn-relay with payload:")
-        print(jsonData)
+        resp = http_request("POST", "http://localhost:9000/", jsonData)
 
-        resp = requests.post("http://localhost:9000/", json=jsonData)
-
-        print("\n Recieved Response: ")
-        print(resp.json())
-
-        self.assertEqual(resp.status_code, 200)
+        assert resp.status_code == 200
 
 
-class DWNRelayQueryManifestsDynamic(unittest.TestCase):
+class TestDWNRelayQueryManifestsDynamic:
     @pytest.mark.run(order=5)
     def test_query_manifests(self):
         # Query for the manifest from DWN-Relay
@@ -134,22 +132,16 @@ class DWNRelayQueryManifestsDynamic(unittest.TestCase):
         )
         messages = {"messages": [message]}
 
-        print("\nPosting to dwn-relay with payload:")
-        print(messages)
+        resp = http_request("POST", "http://localhost:9000/", messages)
 
-        resp = requests.post("http://localhost:9000/", json=messages)
-
-        print("\n Recieved Response: ")
-        print(resp.json())
-
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(
-            resp.json()["replies"][0]["entries"][0]["descriptor"]["schema"],
-            "https://identity.foundation/credential-manifest/schemas/credential-manifest",
+        assert resp.status_code == 200
+        assert (
+            resp.json()["replies"][0]["entries"][0]["descriptor"]["schema"]
+            == "https://identity.foundation/credential-manifest/schemas/credential-manifest"
         )
 
 
-class DWNRelaySubmitCredApplicationDynamic(unittest.TestCase):
+class TestDWNRelaySubmitCredApplicationDynamic:
     @pytest.mark.run(order=6)
     def test_submit_cred_app(self):
 
@@ -159,7 +151,10 @@ class DWNRelaySubmitCredApplicationDynamic(unittest.TestCase):
         ]["presentation_definition"]["id"]
 
         with open(
-            "./fixtures/dwn-relay/collections-write-cred-app-input.json", "r"
+            os.path.join(
+                dirname, "fixtures/dwn-relay/collections-write-cred-app-input.json"
+            ),
+            "r",
         ) as file:
             cred_app_template = json.load(file)
 
@@ -180,17 +175,7 @@ class DWNRelaySubmitCredApplicationDynamic(unittest.TestCase):
         )
         messages = {"messages": [message]}
 
-        print("\nPosting to dwn-relay with payload:")
-        print(messages)
-
-        resp = requests.post("http://localhost:9000/", json=messages)
-
-        print("\n Recieved Response:")
-        print(resp.json())
+        resp = http_request("POST", "http://localhost:9000/", messages)
 
         # TODO: Fix the dynamic collections write message to have the correct DAG CID
-        self.assertEqual(resp.status_code, 200)
-
-
-if __name__ == "__main__":
-    unittest.main()
+        assert resp.status_code == 200

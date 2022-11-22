@@ -23,7 +23,7 @@ def create_collection_write_message(private_key, did_public_key, data):
         "protocol": "https://identity.foundation/decentralized-web-node/protocols/credential-issuance",
         "schema": "https://identity.foundation/credential-manifest/schemas/credential-application",
         "recordId": "0474fd67-2d7e-4657-9844-3dcb8b9c54f3",
-        "dataCid": generate_cid(data),
+        "dataCid": get_dag_cid(data),
         "dateCreated": round(time.time() * 1000),
         "dataFormat": "application/json",
     }
@@ -76,21 +76,15 @@ def generate_cid(payload):
     return util.bytesToString(cid.encode("base32"))
 
 
-# TODO: Implement this for generating a collectionsWrite dag-cbor message
-# /**
-#  * @returns V1 CID of the DAG comprised by chunking data into unixfs dag-pb encoded blocks
-#  */
-# export async function getDagCid(data: Data): Promise<CID> {
-#   const dataBytes = toBytes(data);
-#   const chunk = importer([{ content: dataBytes }], undefined, { onlyHash: true, cidVersion: 1 });
-#   let root;
-
-#   for await (root of chunk);
-
-#   return root.cid;
-# }
+# TODO: make this generate the same output as the dwn-relay javascript version
 def get_dag_cid(data):
-    return from_bytes(data)
+    cred_app_json = json.dumps(data)
+    cred_app_bytes = util.stringToBytes(cred_app_json)
+
+    payload_hash = multihash.digest(cred_app_bytes, "sha2-256")
+    cid = make_cid(1, "dag-pb", payload_hash)
+    returnStr = util.bytesToString(cid.encode())
+    return returnStr
 
 
 def sign(payload_str, private_key, did_public_key):

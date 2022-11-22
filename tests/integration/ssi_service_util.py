@@ -1,7 +1,9 @@
+import os
 import requests
 import json
 
 endpoint = "http://localhost:8080/v1"
+dirname = os.path.dirname(__file__)
 
 
 def create_did():
@@ -11,7 +13,9 @@ def create_did():
 
 
 def create_schema():
-    with open("./fixtures/ssi-service/kyc-schema-input.json", "r") as file:
+    with open(
+        os.path.join(dirname, "fixtures/ssi-service/kyc-schema-input.json"), "r"
+    ) as file:
         schema_json = json.load(file)
     resp = requests.put(endpoint + "/schemas", data=json.dumps(schema_json))
 
@@ -21,7 +25,9 @@ def create_schema():
 def create_verifiable_credential():
     did = create_did()
     schema = create_schema()
-    with open("./fixtures/ssi-service/credential-input.json", "r") as file:
+    with open(
+        os.path.join(dirname, "fixtures/ssi-service/credential-input.json"), "r"
+    ) as file:
         credential_json = json.load(file)
 
     credential_json["issuer"] = did["did"]["id"]
@@ -35,7 +41,9 @@ def create_verifiable_credential():
 def create_cred_manifest():
     did = create_did()
     schema = create_schema()
-    with open("./fixtures/ssi-service/manifest-input.json", "r") as file:
+    with open(
+        os.path.join(dirname, "fixtures/ssi-service/manifest-input.json"), "r"
+    ) as file:
         credential_manifest = json.load(file)
 
     credential_manifest["issuerDID"] = did["did"]["id"]

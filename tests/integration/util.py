@@ -5,7 +5,6 @@ from jose import jwt
 
 def create_jwt(json_data, secret):
     token = jwt.encode(json_data, secret, algorithm="HS256")
-    print(token)
     return token
 
 
