@@ -1,6 +1,8 @@
 name: System Test
 
 on:
+  repository_dispatch:
+    types: [ssi-service-merge-event]
   push:
     branches:
     - main
