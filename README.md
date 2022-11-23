@@ -1,4 +1,4 @@
-# System Test
+# Web5 Components Tests
 
 To orchestrate end to end testing of Web5 components.
 
@@ -9,12 +9,12 @@ This repo contains a docker-compose file which pulls down and spins up the lates
 ## Running System Test Locally
 
 1. Clone the repo
-   `git clone https://github.com/TBD54566975/system-test.git`
+   `git clone https://github.com/TBD54566975/web5-components-tests.git`
 
 2. Spin up the ssi-service and dwn-relay. \* Note is is important to use --no cache because if you don't it will not use the latest version of mainline
    `docker-compose build --no-cache && docker-compose up`
 
-3. In a new shell navigate to systems-tests/tests and run a test script in the tests directory. To run all tests run:
+3. In a new shell navigate to web5-components-tests/tests and run a test script in the tests directory. To run all tests run:
    `cd tests`
    `pip install -r requirements.txt`
    `python 0-all-tests.py`
