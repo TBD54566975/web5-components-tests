@@ -7,9 +7,14 @@ from nacl.signing import SigningKey
 
 from common.util import create_jwt, is_valid_uuid
 from common.ssi_service_util import create_verifiable_credential
-from common.dwn_util import create_collection_write_message, create_collection_query_message, get_did_key_from_bytes
+from common.dwn_util import (
+    create_collection_write_message,
+    create_collection_query_message,
+    get_did_key_from_bytes,
+)
 
 dirname = os.path.dirname(__file__)
+
 
 def http_request(method, url, jsonData):
     print(f"\n {method} request to url: {url} with payload:\n {jsonData}")
@@ -25,33 +30,35 @@ def http_request(method, url, jsonData):
 
     return resp
 
+
 @pytest.fixture
 def dwn_private_key():
     return SigningKey.generate()
 
+
 @pytest.fixture
 def dwn_did_public_key(dwn_private_key):
-    return get_did_key_from_bytes(
-        dwn_private_key.verify_key.encode()
-    )
+    return get_did_key_from_bytes(dwn_private_key.verify_key.encode())
+
 
 # This will create an issuer DID in the ssi-service to be used for the creation of a credential manifest and schema
 @pytest.fixture
 def did():
-  print("\nCreate a did for the issuer: ")
+    print("\nCreate a did for the issuer: ")
 
-  with open(
-      os.path.join(dirname, "common/fixtures/ssi-service/did-input.json"), "r"
-  ) as file:
-      jsonData = json.load(file)
+    with open(
+        os.path.join(dirname, "common/fixtures/ssi-service/did-input.json"), "r"
+    ) as file:
+        jsonData = json.load(file)
 
-  resp = http_request("PUT", "http://localhost:8080/v1/dids/key", jsonData)
+    resp = http_request("PUT", "http://localhost:8080/v1/dids/key", jsonData)
 
-  did_json = resp.json()
+    did_json = resp.json()
 
-  assert resp.status_code == 201
-  assert "did:" in did_json["did"]["id"]
-  return did_json
+    assert resp.status_code == 201
+    assert "did:" in did_json["did"]["id"]
+    return did_json
+
 
 # This will create a schema in the ssi-service to be used in reference to the credential manifest
 @pytest.fixture
@@ -102,12 +109,11 @@ def cred_manifest(did, schema):
 
     assert resp.status_code == 201
     assert (
-        is_valid_uuid(
-            create_cred_manifest_response["credential_manifest"]["id"]
-        )
+        is_valid_uuid(create_cred_manifest_response["credential_manifest"]["id"])
         == True
     )
     return create_cred_manifest_response
+
 
 class TestDWNRelayInstallProtocols:
     # This test installs DWN protocols to the DWN. DWN protocols are used by the DWN to understnad what it needs to do with requests. It's basically a mapping of input route to an output route
@@ -116,7 +122,8 @@ class TestDWNRelayInstallProtocols:
         print("\nConfigure Protocols for DWN-Relay: ")
 
         with open(
-            os.path.join(dirname, "common/fixtures/dwn-relay/protocols-configure.json"), "r"
+            os.path.join(dirname, "common/fixtures/dwn-relay/protocols-configure.json"),
+            "r",
         ) as file:
             jsonData = json.load(file)
 
@@ -129,9 +136,7 @@ class TestDWNRelayQueryManifestsDynamic:
     # This test will query the DWN for a credential manifest. The DWN will query the ssi-service for the manifest and return it to the DWN-Relay
     def test_query_manifests(self, dwn_private_key, dwn_did_public_key):
         # Query for the manifest from DWN-Relay
-        message = create_collection_query_message(
-            dwn_private_key, dwn_did_public_key
-        )
+        message = create_collection_query_message(dwn_private_key, dwn_did_public_key)
         messages = {"messages": [message]}
 
         resp = http_request("POST", "http://localhost:9000/", messages)
@@ -148,13 +153,14 @@ class TestDWNRelaySubmitCredApplicationDynamic:
     def test_submit_cred_app(self, cred_manifest, dwn_private_key, dwn_did_public_key):
 
         cred_manifest_id = cred_manifest["credential_manifest"]["id"]
-        presentation_definition_id = cred_manifest[
-            "credential_manifest"
-        ]["presentation_definition"]["id"]
+        presentation_definition_id = cred_manifest["credential_manifest"][
+            "presentation_definition"
+        ]["id"]
 
         with open(
             os.path.join(
-                dirname, "common/fixtures/dwn-relay/collections-write-cred-app-input.json"
+                dirname,
+                "common/fixtures/dwn-relay/collections-write-cred-app-input.json",
             ),
             "r",
         ) as file:

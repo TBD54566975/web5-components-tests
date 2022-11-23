@@ -2,7 +2,6 @@ import json
 import time
 import dag_cbor
 
-# import util
 from common.util import *
 
 from cid import make_cid, from_bytes
