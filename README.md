@@ -10,6 +10,8 @@ This repo contains a docker-compose file which pulls down and spins up the lates
 
 1. Clone the repo
 
+   `git clone https://github.com/TBD54566975/web5-components-tests.git`
+
 ```bash 
 git clone https://github.com/TBD54566975/web5-components-tests.git
 ```
@@ -52,6 +54,7 @@ The test runs HTTP requests against the DWN Relay from the perspective of Alice:
 4. Installs DWN protocols to the DWN. DWN protocols are used by the DWN to understnad what it needs to do with requests. It's basically a mapping of input route to an output route
 5. Queries the DWN for a credential manifest. The DWN will query the ssi-service for the manifest and return it to the DWN-Relay
 6. Submits a credential application to the DWN. The DWN will submit the credential application to the ssi-service for the credential response containing the verifiable credential
+
 
 ## Automatic Runs Via Github Actions
 
