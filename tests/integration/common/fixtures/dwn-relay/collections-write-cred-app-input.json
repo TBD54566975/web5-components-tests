@@ -1,0 +1,32 @@
+{
+    "alg": "EdDSA",
+    "credential_application": {
+        "format": {
+            "jwt": {
+                "alg": [
+                    "EdDSA"
+                ]
+            }
+        },
+        "id": "id123",
+        "manifest_id": "0b90dfd0-93a5-48b0-866a-1c6ceb29fb3b",
+        "presentation_submission": {
+            "definition_id": "32f54163-7166-48f1-93d8-ff217bdb0653",
+            "descriptor_map": [
+                {
+                    "format": "jwt_vc",
+                    "id": "kyc1",
+                    "path": "$.verifiableCredentials[0]"
+                }
+            ],
+            "id": "psid"
+        },
+        "spec_version": "https://identity.foundation/credential-manifest/spec/v1.0.0/"
+    },
+    "kid": "did:key:z6MkjMX6Gkb8egKSddaDSFsXQHTCQyw1ZEBx2XQWPyTdYBJW",
+    "verifiableCredentials": [
+        "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa2pNWDZHa2I4ZWdLU2RkYURTRnNYUUhUQ1F5dzFaRUJ4MlhRV1B5VGRZQkpXIiwidHlwIjoiSldUIn0.eyJleHAiOjI1ODAxMzAwODAsImlzcyI6ImRpZDprZXk6ejZNa2pNWDZHa2I4ZWdLU2RkYURTRnNYUUhUQ1F5dzFaRUJ4MlhRV1B5VGRZQkpXIiwianRpIjoiYjc5MDFmNmQtYmQwOC00ZGQ1LWFmM2EtMDg5Y2JkMTQyZmM1IiwibmJmIjoxNjY2NzI2NDc0LCJzdWIiOiJkaWQ6a2V5Ono2TWtqTVg2R2tiOGVnS1NkZGFEU0ZzWFFIVENReXcxWkVCeDJYUVdQeVRkWUJKVyIsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIl0sImlkIjoiYjc5MDFmNmQtYmQwOC00ZGQ1LWFmM2EtMDg5Y2JkMTQyZmM1IiwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCJdLCJpc3N1ZXIiOiJkaWQ6a2V5Ono2TWtqTVg2R2tiOGVnS1NkZGFEU0ZzWFFIVENReXcxWkVCeDJYUVdQeVRkWUJKVyIsImlzc3VhbmNlRGF0ZSI6IjIwMjItMTAtMjVUMTk6MzQ6MzRaIiwiZXhwaXJhdGlvbkRhdGUiOiIyMDUxLTEwLTA1VDE0OjQ4OjAwLjAwMFoiLCJjcmVkZW50aWFsU3ViamVjdCI6eyJhZGRpdGlvbmFsTmFtZSI6ImhhbmsgaGlsbCIsImJpcnRoRGF0ZSI6IjIwMDktMDEtMDMiLCJmYW1pbHlOYW1lIjoic2ltcHNvbiIsImdpdmVuTmFtZSI6InJpY2t5IGJvYmJ5IiwiaWQiOiJkaWQ6a2V5Ono2TWtqTVg2R2tiOGVnS1NkZGFEU0ZzWFFIVENReXcxWkVCeDJYUVdQeVRkWUJKVyIsInBvc3RhbEFkZHJlc3MiOnsiYWRkcmVzc0NvdW50cnkiOiJVLlMuQSIsImFkZHJlc3NMb2NhbGl0eSI6IkF1c3RpbiIsImFkZHJlc3NSZWdpb24iOiJUWCIsInBvc3RhbENvZGUiOiI3ODcyNCIsInN0cmVldEFkZHJlc3MiOiIxMjMgSmFua3RvcGlhIEF2ZS4ifSwidGF4SUQiOiIxMjMifSwiY3JlZGVudGlhbFNjaGVtYSI6eyJpZCI6IjE1ZTE2NDM0LWZhM2QtNDZkMi1hNjhhLWY4NzAxZmEyMzlmYSIsInR5cGUiOiJKc29uU2NoZW1hVmFsaWRhdG9yMjAxOCJ9fSwiaWF0IjoxNjY2OTczMjQ0fQ.ozxVFSf-yZ_E15xdjDNStIGdUK-CU9yzktjTA98NXMDZ7S6OTJzfYNkQ-_7e4YSLQUfmAK59W328Cj6ocrdeBA"
+    ],
+    "iat": 1666973244,
+    "iss": "did:key:z6MkjMX6Gkb8egKSddaDSFsXQHTCQyw1ZEBx2XQWPyTdYBJW"
+}

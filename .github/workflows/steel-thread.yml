@@ -1,6 +1,8 @@
 name: System Test
 
 on:
+  repository_dispatch:
+    types: [ssi-service-merge-event]
   push:
     branches:
     - main
@@ -11,7 +13,7 @@ on:
 
 jobs:
   systemtest:
-    timeout-minutes: 15
+    timeout-minutes: 20
     runs-on: ubuntu-latest
 
     steps:
@@ -27,11 +29,11 @@ jobs:
         python-version: '3.8'
 
     - name: Install requirements.txt
-      run: pip install -r tests/requirements.txt
+      run: pip install -r tests/integration/requirements.txt
     
     - name: Run tests
-      working-directory: ./tests
-      run: python 0-all-tests.py
+      working-directory: ./tests/integration
+      run: pytest -rP
 
     - name: Stop Containers
       if: always()
