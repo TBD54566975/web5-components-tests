@@ -12,12 +12,22 @@ services:
       - jaeger
     volumes:
       - ./config/compose.toml:/app/config/config.toml
+    networks:
+      - web5_network
   jaeger:
     image: jaegertracing/all-in-one:latest
     ports:
       - "6831:6831/udp"
       - "16686:16686"
       - "14268:14268"
+  redis:
+    image: redis:alpine
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    # This allows for data to not be persisted on new runs
+    command: [sh, -c, "rm -f /data/dump.rdb && redis-server --save ''"]
+    networks:
+      - web5_network
   dwn-relay-web:
     build:
       context: ./
@@ -26,5 +36,9 @@ services:
       - "9000:9000"
     environment:
       - API_URL=http://172.17.0.1:8080
+    networks:
+      - web5_network
 
 
+networks:
+  web5_network:
