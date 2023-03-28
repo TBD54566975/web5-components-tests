@@ -12,7 +12,7 @@ WORKDIR /app/ssi-service
 
 RUN ls -alt
 RUN go mod download
-RUN go build -tags jwx_es256k -o /docker-ssi-service ./cmd
+RUN go build -tags jwx_es256k -o /docker-ssi-service ./cmd/ssiservice
 
 EXPOSE 3000
 
