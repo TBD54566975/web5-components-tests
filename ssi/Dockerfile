@@ -1,8 +1,6 @@
-FROM ubuntu:latest
+FROM golang:1.20.2-alpine
 
-RUN apt-get -y update
-RUN apt-get -y install git
-RUN apt-get -y install golang-go
+RUN apk add --no-cache git
 
 WORKDIR /app
 
@@ -13,9 +11,9 @@ WORKDIR /app/ssi-service
 RUN ls -alt
 RUN go mod download
 RUN go build -tags jwx_es256k -o /docker-ssi-service ./cmd/ssiservice
+RUN rm config/config.toml
+RUN cp config/compose.toml config/config.toml
 
 EXPOSE 3000
 
 CMD [ "/docker-ssi-service" ]
-
-
