@@ -8,7 +8,6 @@ RUN git clone https://github.com/TBD54566975/ssi-service.git
 
 WORKDIR /app/ssi-service
 
-RUN ls -alt
 RUN go mod download
 RUN go build -tags jwx_es256k -o /docker-ssi-service ./cmd/ssiservice
 RUN rm config/config.toml
