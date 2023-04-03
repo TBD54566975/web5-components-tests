@@ -10,8 +10,6 @@ This repo contains a docker-compose file which pulls down and spins up the lates
 
 1. Clone the repo
 
-   `git clone https://github.com/TBD54566975/web5-components-tests.git`
-
 ```bash 
 git clone https://github.com/TBD54566975/web5-components-tests.git
 ```
@@ -24,12 +22,21 @@ docker-compose build --no-cache && docker-compose up
 
 3. In a new shell navigate to web5-components-tests/tests and run a test script in the tests directory. To run all tests run:
 ```bash
+# Running with pip alias command
 cd tests
 pip install -r requirements.txt
 pip install -U pytest
 
 # The -rP command allows you see all the output from the tests
-pytest -rP 
+pytest -rP
+
+# Alternativly if instead you want to run a module as a script command
+cd tests
+python -m pip install -r requirements.txt
+python -m pip install pytest
+
+# The -rP command allows you see all the output from the tests
+python -m pytest -rP
 ```
 
 ## Directory Structure
@@ -48,12 +55,14 @@ tests/integration/test_steelthread.py
 
 The test runs HTTP requests against the DWN Relay from the perspective of Alice:
 
-1. Creates an issuer DID in the ssi-service
-2. Creates a schema in the ssi-service to be used in reference to the credential manifest
-3. Creates a credential manifest in the ssi-service to be applied to from a submitted credential application
-4. Installs DWN protocols to the DWN. DWN protocols are used by the DWN to understnad what it needs to do with requests. It's basically a mapping of input route to an output route
-5. Queries the DWN for a credential manifest. The DWN will query the ssi-service for the manifest and return it to the DWN-Relay
-6. Submits a credential application to the DWN. The DWN will submit the credential application to the ssi-service for the credential response containing the verifiable credential
+* Creates an issuer DID in the ssi-service
+* Creates a schema in the ssi-service to be used in reference to the credential manifest
+* Creates a credential manifest in the ssi-service to be applied to from a submitted credential application
+* Installs DWN protocols to the DWN. DWN protocols are used by the DWN to understnad what it needs to do with requests. It's basically a mapping of input route to an output route
+* Queries the DWN for a credential manifest. The DWN will query the ssi-service for the manifest and return it to the DWN-Relay
+* Submits a credential application to the DWN. The DWN will submit the credential application to the ssi-service for the credential response containing the verifiable credential
+
+![steelthread sequence](docs/steelthreadsequence.png)
 
 
 ## Automatic Runs Via Github Actions
