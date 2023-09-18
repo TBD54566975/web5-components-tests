@@ -1,8 +1,13 @@
 version: 2.3
-# dependencies:
-#   - project: TBD54566975/sdk-kotlin
-#   - project: TBD54566975/web5-js
-#   - project: TBD54566975/ssi-service
+dependencies:
+  - project: TBD54566975/sdk-kotlin
+  - project: TBD54566975/web5-js
+  - project: TBD54566975/ssi-service
+  - project: TBD54566975/web5-components/tests
+    dependencies:
+      - project: TBD54566975/sdk-kotlin
+      - project: TBD54566975/web5-js
+      - project: TBD54566975/ssi-service
 default:
   build-command:
     current: echo default current
