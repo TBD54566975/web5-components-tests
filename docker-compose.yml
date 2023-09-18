@@ -1,36 +1,18 @@
 version: "3.98"
 services:
-  ssi-service-web:
-    build:
-      context: ./
-      dockerfile: ./ssi/Dockerfile
+  test-server:
+    image: web5-component:latest
     ports:
-      - "8080:3000"
-    environment:
-      - JAEGER_HTTP_URL=http://jaeger:14268/api/traces
+      - 8080
+  test-client:
+    build:
+      context: .
+    command:
+      [
+        "/web5-components-tests",
+        "-test-only",
+        "--server",
+        "http://test-server:8080",
+      ]
     depends_on:
-      - jaeger
-      - redis
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    ports:
-      - "6831:6831/udp"
-      - "16686:16686"
-      - "14268:14268"
-  redis:
-    image: redis:alpine
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
-    # This allows for data to not be persisted on new runs
-    command: [sh, -c, "rm -f /data/dump.rdb && redis-server --save ''"]
-    ports:
-      - "6379:6379"
-  dwn-relay-web:
-    build:
-      context: ./
-      dockerfile: ./dwn/Dockerfile
-    ports:
-      - "9000:9000"
-    environment:
-      - API_URL=http://172.17.0.1:8080
-
+      - test-server

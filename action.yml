@@ -1,0 +1,7 @@
+name: Web5 Components Test
+description: test all web5 components together
+runs:
+  using: composite
+  steps:
+    - run: ${{ github.action_path }}/github-action.sh
+      shell: bash
