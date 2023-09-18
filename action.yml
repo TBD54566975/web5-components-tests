@@ -1,0 +1,11 @@
+name: Web5 Components Test
+description: test all web5 components together
+inputs:
+  test-component:
+    description: which component is this test running as - other components will use the latest stable
+    required: true
+runs:
+  using: composite
+  steps:
+    - runs: ${{ github.action_path }}/github-action.sh
+      shell: bash
