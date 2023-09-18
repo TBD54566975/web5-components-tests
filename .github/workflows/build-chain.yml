@@ -17,8 +17,9 @@ jobs:
     steps:
       - name: Build Chain
         id: build-chain
-        uses: kiegroup/github-action-build-chain@v3.4.1
+        uses: kiegroup/github-action-build-chain@v3.4.0
         with:
-          definition-file: build-chain.yaml
+          definition-file: https://github.com/TBD54566975/web5-components-tests/raw/build-chain/build-chain.yaml
+          flow-type: branch
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

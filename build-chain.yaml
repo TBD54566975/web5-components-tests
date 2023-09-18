@@ -3,7 +3,7 @@ dependencies:
   - project: TBD54566975/sdk-kotlin
   - project: TBD54566975/web5-js
   - project: TBD54566975/ssi-service
-  - project: TBD54566975/web5-components/tests
+  - project: TBD54566975/web5-components
     dependencies:
       - project: TBD54566975/sdk-kotlin
       - project: TBD54566975/web5-js
