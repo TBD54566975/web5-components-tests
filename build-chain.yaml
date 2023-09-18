@@ -1,0 +1,18 @@
+version: 2.3
+# dependencies:
+#   - project: TBD54566975/sdk-kotlin
+#   - project: TBD54566975/web5-js
+#   - project: TBD54566975/ssi-service
+default:
+  build-command:
+    current: echo default current
+    upstream: echo default upstream
+build:
+  - project: TBD54566975/web5-components-tests
+    build-command:
+      current: echo hello
+      upstream: echo upstream
+  - project: TBD54566975/web5-js
+    build-command:
+      current: echo current
+      upstream: echo upstream

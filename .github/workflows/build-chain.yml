@@ -1,0 +1,24 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build-chain:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build Chain
+        id: build-chain
+        uses: ginxo/github-action-build-chain@3.4.1
+        with:
+          definition-file: build-chain.yaml
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
