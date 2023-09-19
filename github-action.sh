@@ -1,4 +1,5 @@
 #!/bin/bash
 set -exuo pipefail
 
-docker ps
+# docker build -t web5-testsuite -f web5-testsuite.Dockerfile .
+env
