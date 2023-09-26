@@ -9,3 +9,10 @@ runs:
   steps:
     - run: ${{ github.action_path }}/github-action.sh
       shell: bash
+  inputs:
+    image-a:
+      description: one container image to use for the test
+      required: true
+    image-b:
+      description: other container image to use for the test
+      required: true
