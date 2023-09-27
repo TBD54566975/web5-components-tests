@@ -15,4 +15,5 @@ jobs:
   build-chain:
     runs-on: ubuntu-latest
     steps:
+      - run: git clone -b web5-component-tests https://github.com/TBD54566975/web5-js .
       - uses: TBD54566975/web5-components-tests@build-chain
