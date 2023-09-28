@@ -1,16 +1,11 @@
 version: "3.98"
 services:
-  test-server-a:
+  test-server:
     image: web5-component:latest
     ports:
       - 8080
-  # test-server-b:
-  #   image: $INPUT_IMAGE_B
-  #   ports:
-  #     - 8080
   tester:
     build:
       context: .
     depends_on:
-      - test-server-a
-      # - test-server-b
+      - test-server

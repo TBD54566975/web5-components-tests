@@ -8,13 +8,15 @@ import (
 	"time"
 )
 
+const testServerURL = "http://test-server:8080"
+
 func TestMain(m *testing.M) {
 	var serverAup bool
 
 	for !serverAup {
-		resp, err := http.Get("http://test-server-a:8080/ready")
+		resp, err := http.Get(testServerURL + "/ready")
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "waiting for test-server-a to be ready: %v", err)
+			fmt.Fprintf(os.Stderr, "waiting for test-server-a to be ready: %v\n", err)
 			continue
 		} else {
 			if resp.StatusCode == http.StatusOK {
@@ -38,11 +40,9 @@ func TestMain(m *testing.M) {
 
 	status := m.Run()
 
-	for _, server := range []string{"test-server-a"} {
-		if _, err := http.Get(fmt.Sprintf("http://%s:8080/shutdown", server)); err != nil {
-			fmt.Fprintf(os.Stderr, "error shutting down %s: %v", server, err)
-			os.Exit(1)
-		}
+	if _, err := http.Get(testServerURL + "/shutdown"); err != nil {
+		fmt.Fprintf(os.Stderr, "error shutting down test-server: %v\n", err)
+		os.Exit(1)
 	}
 
 	os.Exit(status)
