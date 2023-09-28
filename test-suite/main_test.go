@@ -14,6 +14,7 @@ func TestMain(m *testing.M) {
 	var serverAup bool
 
 	for !serverAup {
+		fmt.Println("waiting for " + testServerURL + "/ready")
 		resp, err := http.Get(testServerURL + "/ready")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "waiting for test-server-a to be ready: %v\n", err)
@@ -35,7 +36,6 @@ func TestMain(m *testing.M) {
 		// }
 
 		time.Sleep(time.Second)
-		fmt.Println("waiting for both servers to start")
 	}
 
 	status := m.Run()
@@ -46,8 +46,4 @@ func TestMain(m *testing.M) {
 	}
 
 	os.Exit(status)
-}
-
-func TestCreateVC(t *testing.T) {
-	fmt.Println("pass")
 }

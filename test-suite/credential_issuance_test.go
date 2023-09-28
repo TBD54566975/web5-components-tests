@@ -56,14 +56,17 @@ func TestCredentialIssuance(t *testing.T) {
 	})
 	if err != nil {
 		t.Error(err)
+		return
 	}
 
 	resp, err := http.Post(testServerURL+"/credentials/issue", "application/json", bytes.NewReader(req))
 	if err != nil {
 		t.Error(err)
+		return
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		t.Error("incorrect status from /credential/issue: ", resp.Status)
+		return
 	}
 }
