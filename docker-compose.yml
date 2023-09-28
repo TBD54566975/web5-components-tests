@@ -4,7 +4,7 @@ services:
     image: web5-component:latest
     ports:
       - 8080
-  tester:
+  test-client:
     build:
       context: .
     depends_on:
