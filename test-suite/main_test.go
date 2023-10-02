@@ -18,6 +18,7 @@ func TestMain(m *testing.M) {
 		resp, err := http.Get(testServerURL + "/ready")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "waiting for test-server-a to be ready: %v\n", err)
+			time.Sleep(time.Second)
 			continue
 		} else {
 			if resp.StatusCode == http.StatusOK {
