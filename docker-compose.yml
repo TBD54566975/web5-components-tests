@@ -7,5 +7,12 @@ services:
   test-client:
     build:
       context: .
+    command:
+      [
+        "/web5-components-tests",
+        "-test-only",
+        "--server",
+        "http://test-server:8080",
+      ]
     depends_on:
       - test-server

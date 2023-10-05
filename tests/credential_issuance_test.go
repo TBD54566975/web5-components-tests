@@ -1,10 +1,10 @@
-package testsuite_test
+package tests
 
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
-	"testing"
 )
 
 // {
@@ -40,7 +40,7 @@ type CredentialIssuanceRequestCredential struct {
 type CredentialIssuanceRequestOptions struct {
 }
 
-func TestCredentialIssuance(t *testing.T) {
+func CredentialIssuance(serverURL string) error {
 	req, err := json.Marshal(CredentialIssuanceRequest{
 		Credential: CredentialIssuanceRequestCredential{
 			Context:      []string{"https://www.w3.org/2018/credentials/v1"},
@@ -55,18 +55,23 @@ func TestCredentialIssuance(t *testing.T) {
 		},
 	})
 	if err != nil {
-		t.Error(err)
-		return
+		return err
 	}
 
-	resp, err := http.Post(testServerURL+"/credentials/issue", "application/json", bytes.NewReader(req))
+	resp, err := http.Post(serverURL+"/credentials/issue", "application/json", bytes.NewReader(req))
 	if err != nil {
-		t.Error(err)
-		return
+		return err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		t.Error("incorrect status from /credential/issue: ", resp.Status)
-		return
+		return fmt.Errorf("incorrect status from /credential/issue: %s", resp.Status)
 	}
+
+	return nil
+}
+
+func init() {
+	tests = append(tests,
+		test{Name: "CredentialIssuance", Fn: CredentialIssuance},
+	)
 }
