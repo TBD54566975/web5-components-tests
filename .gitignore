@@ -167,4 +167,4 @@ cython_debug/
 #.idea/
 
 # End of https://www.toptal.com/developers/gitignore/api/python
-web5-components-test
+/web5-components-tests
