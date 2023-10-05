@@ -32,14 +32,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3
-      - run: ls -R
+      - name: move artifacts around
+        id: artifact-rename
+        run: |
+          set -ex
+          echo "artifacts<<EOF" >> $GITHUB_OUTPUT
+          for artifact in web5-components-tests-*; do
+            mv "${artifact}" "artifact-${artifact}"
+            mv "artifact-${artifact}/web5-components-tests" "${artifact}"
+            echo "${artifact}" >> $GITHUB_OUTPUT
+          done
+          echo EOF >> $GITHUB_OUTPUT
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            web5-components-tests-linux-amd64
-            web5-components-tests-linux-arm64
-            web5-components-tests-darwin-amd64
-            web5-components-tests-darwin-arm64
+          files: ${{ steps.artifact-rename.outputs.artifacts }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
