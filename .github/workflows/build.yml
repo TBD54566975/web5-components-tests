@@ -12,17 +12,24 @@ on:
   workflow_dispatch:
 
 jobs:
-  web5-js:
+  build-binary:
+    strategy:
+      matrix:
+        GOARCH: ["amd64", "arm64"]
+        GOOS: ["linux", "darwin"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: 1.21.1
+          go-version: 1.21
           cache: true
       - run: go build ./cmd/web5-components-tests
+        env:
+          GOARCH: ${{ matrix.GOARCH }}
+          GOOS: ${{ matrix.GOOS }}
       - uses: actions/upload-artifact@v3
         with:
-          name: web5-components-tests
+          name: web5-components-tests-${{ matrix.GOOS }}-${{ matrix.GOARCH }}
           path: web5-components-tests
