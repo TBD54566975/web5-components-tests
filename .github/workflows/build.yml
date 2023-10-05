@@ -43,4 +43,5 @@ jobs:
       - uses: actions/download-artifact@v3
       - uses: actions/upload-artifact@v3
         with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           path: web5-components-tests*
