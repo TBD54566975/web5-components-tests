@@ -32,6 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3
+      - run: ls -R
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
