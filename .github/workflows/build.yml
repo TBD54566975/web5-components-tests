@@ -2,14 +2,8 @@ name: build
 
 on:
   push:
-    branches:
+    tags:
       - "*"
-  pull_request:
-    branches:
-      - "*"
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
 
 jobs:
   build-binary:
@@ -29,7 +23,18 @@ jobs:
         env:
           GOARCH: ${{ matrix.GOARCH }}
           GOOS: ${{ matrix.GOOS }}
+      - name: release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          release_name: ${{  github.ref_name }}
+          tag_name: ${{ github.ref }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - uses: actions/upload-artifact@v3
         with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           name: web5-components-tests-${{ matrix.GOOS }}-${{ matrix.GOARCH }}
           path: web5-components-tests
