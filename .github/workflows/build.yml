@@ -41,6 +41,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - uses: actions/download-artifact@v3
-      - uses: actions/upload-artifacts@v3
+      - uses: actions/upload-artifact@v3
         with:
           path: web5-components-tests*
