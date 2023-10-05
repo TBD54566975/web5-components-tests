@@ -40,7 +40,7 @@ type CredentialIssuanceRequestCredential struct {
 type CredentialIssuanceRequestOptions struct {
 }
 
-func CredentialIssuance(serverURL string) error {
+func CredentialIssuanceTest(serverURL string) error {
 	req, err := json.Marshal(CredentialIssuanceRequest{
 		Credential: CredentialIssuanceRequestCredential{
 			Context:      []string{"https://www.w3.org/2018/credentials/v1"},
@@ -68,10 +68,4 @@ func CredentialIssuance(serverURL string) error {
 	}
 
 	return nil
-}
-
-func init() {
-	tests = append(tests,
-		test{Name: "CredentialIssuance", Fn: CredentialIssuance},
-	)
 }

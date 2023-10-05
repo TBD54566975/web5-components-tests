@@ -2,11 +2,11 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"os"
 	"os/exec"
 
 	"github.com/TBD54566975/web5-components-tests/tests"
+	"golang.org/x/exp/slog"
 )
 
 var (
@@ -16,23 +16,29 @@ var (
 
 func main() {
 	flag.Parse()
+
+	logger := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug})
+	slog.SetDefault(slog.New(logger))
+
 	if !*testOnly {
 		cmd := exec.Command("docker", "build", "-t", "web5-component:latest", "-f", ".web5-component/test.Dockerfile", ".")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
-			panic(err)
+			slog.Error("error building server", "error", err)
+			os.Exit(1)
 		}
 
 		cmd = exec.Command("docker", "run", "-p", "8080:8080", "--rm", "web5-component:latest")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Start(); err != nil {
-			panic(err)
+			slog.Error("error running server", "error", err)
+			os.Exit(1)
 		}
 
 		defer func() {
-			fmt.Println("shutting down server")
+			slog.Debug("shutting down server")
 			if err := cmd.Process.Signal(os.Kill); err != nil {
 				panic(err)
 			}

@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -14,21 +13,24 @@ type test struct {
 	Fn   func(serverURL string) error
 }
 
-var tests = []test{}
+var tests = []test{
+	{Name: "CredentialIssuance", Fn: CredentialIssuanceTest},
+}
 
 func RunTests(serverURL string) {
 	var serverAup bool
 
 	for !serverAup {
-		fmt.Println("waiting for " + serverURL + "/ready")
-		resp, err := http.Get(serverURL + "/ready")
+		readyURL := serverURL + "/ready"
+		resp, err := http.Get(readyURL)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "waiting for test-server-a to be ready: %v\n", err)
+			slog.Debug("waiting for server to be ready", "url", readyURL, "err", err)
 			time.Sleep(time.Second)
 			continue
 		} else {
 			if resp.StatusCode == http.StatusOK {
 				serverAup = true
+				slog.Debug("server is ready", "url", readyURL)
 			}
 		}
 
@@ -60,7 +62,8 @@ func RunTests(serverURL string) {
 
 	defer func() {
 		if _, err := http.Get(serverURL + "/shutdown"); err != nil {
-			fmt.Fprintf(os.Stderr, "error shutting down test-server: %v\n", err)
+			// fmt.Fprintf(os.Stderr, "error shutting down test-server: %v\n", err)
+			slog.Error("error shutting down server", "error", err)
 			os.Exit(1)
 		}
 	}()
