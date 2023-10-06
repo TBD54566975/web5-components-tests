@@ -10,8 +10,9 @@ import (
 )
 
 var (
-	testOnly = flag.Bool("test-only", false, "when set, the server is not built and is expected to be already running")
-	server   = flag.String("server", "http://localhost:8080", "url of the server to connect to")
+	testOnly     = flag.Bool("test-only", true, "when set, the server is not built and is expected to be already running")
+	jsServer     = flag.String("js-server", "http://localhost:8080", "url of the server to connect to")
+	kotlinServer = flag.String("kotlin-server", "http://localhost:8081", "url of the server to connect to")
 )
 
 func main() {
@@ -48,5 +49,6 @@ func main() {
 		}()
 	}
 
-	tests.RunTests(*server)
+	tests.RunTests(*jsServer)
+	tests.RunTests(*kotlinServer)
 }
