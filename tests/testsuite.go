@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -11,7 +12,7 @@ import (
 
 type test struct {
 	Name string
-	Fn   func(serverURL string) error
+	Fn   func(ctx context.Context, serverURL string) error
 }
 
 var tests = []test{
@@ -51,7 +52,9 @@ func RunTests(serverURL string) {
 	success := true
 	for _, t := range tests {
 		slog.Info("running", "test", t.Name)
-		if err := t.Fn(serverURL); err != nil {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+		defer cancel()
+		if err := t.Fn(ctx, serverURL); err != nil {
 			slog.Error("error", "test", t.Name, "error", err)
 			success = false
 		}

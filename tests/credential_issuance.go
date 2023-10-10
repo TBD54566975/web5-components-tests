@@ -8,21 +8,7 @@ import (
 	"github.com/TBD54566975/web5-components-tests/openapi"
 )
 
-// todo: better struct names all around
-type CredentialIssuanceRequest struct {
-	Credential CredentialIssuanceRequestCredential `json:"credential"`
-}
-
-type CredentialIssuanceRequestCredential struct {
-	Context           []string       `json:"@context"`
-	ID                string         `json:"id"`
-	Type              []string       `json:"type"`
-	Issuer            string         `json:"issuer"`
-	CredentialSubject map[string]any `json:"credentialSubject"`
-}
-
-func CredentialIssuanceTest(serverURL string) error {
-	ctx := context.Background()
+func CredentialIssuanceTest(ctx context.Context, serverURL string) error {
 	expectedContext := []string{"https://www.w3.org/2018/credentials/v1"}
 	expectedType := []string{"VerifiableCredential"}
 	expectedID := "id-123"
