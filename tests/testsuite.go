@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -67,4 +68,34 @@ func RunTests(serverURL string) {
 			os.Exit(1)
 		}
 	}()
+}
+
+func compareStringSlices(actual []string, expected []string, field string) error {
+	if len(actual) != len(expected) {
+		return fmt.Errorf("incorrect value for %s: expected %v, got %v", field, expected, actual)
+	}
+
+	for i, v := range actual {
+		if v != expected[i] {
+			return fmt.Errorf("incorrect value for %s: expected %v, got %v", field, expected, actual)
+		}
+	}
+	return nil
+}
+
+// Utility function to compare maps
+func compareMaps(actual, expected map[string]interface{}, field string) error {
+	for k, v := range expected {
+		if actual[k] != v {
+			return fmt.Errorf("incorrect value for %s: expected %v, got %v", field, expected, actual)
+		}
+	}
+	return nil
+}
+
+func compareStrings(actual string, expected string, field string) error {
+	if actual != expected {
+		return fmt.Errorf("incorrect value for %s: expected %v, got %v", field, expected, actual)
+	}
+	return nil
 }

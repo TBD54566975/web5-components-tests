@@ -1,12 +1,11 @@
 package tests
 
 import (
-	"bytes"
-	"encoding/json"
+	"context"
+	"errors"
 	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
+
+	"github.com/TBD54566975/web5-components-tests/openapi"
 )
 
 // todo: better struct names all around
@@ -23,6 +22,7 @@ type CredentialIssuanceRequestCredential struct {
 }
 
 func CredentialIssuanceTest(serverURL string) error {
+	ctx := context.Background()
 	expectedContext := []string{"https://www.w3.org/2018/credentials/v1"}
 	expectedType := []string{"VerifiableCredential"}
 	expectedID := "id-123"
@@ -32,88 +32,61 @@ func CredentialIssuanceTest(serverURL string) error {
 		"firstName": "bob",
 	}
 
-	req, err := json.Marshal(CredentialIssuanceRequest{
-		Credential: CredentialIssuanceRequestCredential{
+	client, err := openapi.NewClientWithResponses(serverURL)
+	if err != nil {
+		return err
+	}
+
+	response, err := client.CredentialIssueWithResponse(ctx, openapi.CredentialIssuanceRequest{
+		Credential: openapi.CredentialIssuanceRequestCredential{
 			Context:           expectedContext,
-			ID:                expectedID,
-			Type:              expectedType,
-			Issuer:            expectedIssuer,
 			CredentialSubject: expectedCredentialSubject,
+			// ExpirationDate: ,
+			Id: expectedID,
+			// IssuanceDate: ,
+			Issuer: openapi.CredentialIssuer{Id: expectedIssuer},
+			Type:   expectedType,
 		},
 	})
-
 	if err != nil {
 		return err
 	}
 
-	resp, err := http.Post(serverURL+"/credentials/unsigned", "application/json", bytes.NewReader(req))
-	if err != nil {
-		return err
+	if response.JSON200 == nil {
+		return fmt.Errorf("%s: %s", response.Status(), string(response.Body))
 	}
 
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("incorrect status from /credential/issue: %s", resp.Status)
-	}
-
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var jsonData map[string]interface{}
-	err = json.Unmarshal(bodyBytes, &jsonData)
-	if err != nil {
-		log.Fatalf("Error decoding JSON: %v", err)
-	}
+	vc := response.JSON200.VerifiableCredential
 
 	// Check @context
-	if context, ok := jsonData["@context"].([]interface{}); !ok || !compareStringSlices(context, expectedContext) {
-		return fmt.Errorf("Assertion failed for @context. Expected %v, got %v", expectedContext, context)
-	}
-
-	// Check type
-	if typeValue, ok := jsonData["type"].([]interface{}); !ok || !compareStringSlices(typeValue, expectedType) {
-		return fmt.Errorf("Assertion failed for type. Expected %v, got %v", expectedType, typeValue)
-	}
-
-	// Check id
-	if id, ok := jsonData["id"].(string); !ok || id != expectedID {
-		return fmt.Errorf("Assertion failed for id. Expected %s, got %s", expectedID, id)
-	}
-
-	// Check issuer
-	if issuer, ok := jsonData["issuer"].(string); !ok || issuer != expectedIssuer {
-		return fmt.Errorf("Assertion failed for issuer. Expected %s, got %s", expectedIssuer, issuer)
+	errs := []error{}
+	if err := compareStringSlices(vc.Context, expectedContext, "@context"); err != nil {
+		errs = append(errs, err)
 	}
 
 	// Check credentialSubject
-	if cs, ok := jsonData["credentialSubject"].(map[string]interface{}); !ok || !compareMaps(cs, expectedCredentialSubject) {
-		return fmt.Errorf("Assertion failed for credentialSubject. Expected %v, got %v", expectedCredentialSubject, cs)
+	if err := compareMaps(vc.CredentialSubject, expectedCredentialSubject, "credentialSubject"); err != nil {
+		errs = append(errs, err)
 	}
 
-	println("Finished cred issuance test")
+	// Check id
+	if err := compareStrings(vc.Id, expectedID, "id"); err != nil {
+		errs = append(errs, err)
+	}
+
+	// Check type
+	if err := compareStringSlices(vc.Type, expectedType, "type"); err != nil {
+		errs = append(errs, err)
+	}
+
+	// Check issuer
+	if err := compareStrings(vc.Issuer.Id, expectedIssuer, "issuer.id"); err != nil {
+		errs = append(errs, err)
+	}
+
+	if len(errs) > 0 {
+		return errors.Join(errs...)
+	}
 
 	return nil
-}
-
-func compareStringSlices(a []interface{}, b []string) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i, v := range a {
-		if vs, ok := v.(string); !ok || vs != b[i] {
-			return false
-		}
-	}
-	return true
-}
-
-// Utility function to compare maps
-func compareMaps(a, b map[string]interface{}) bool {
-	for k, v := range a {
-		if b[k] != v {
-			return false
-		}
-	}
-	return true
 }
